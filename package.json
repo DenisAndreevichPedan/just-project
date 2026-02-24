@@ -1,0 +1,11 @@
+{
+    "workspaces": ["apps/*", "packages/*"]
+    "scripts": {
+        "lint": "turbo run lint",
+        "lint:web": "npm --prefix apps/web run lint",
+        "typecheck": "npm --prefix apps/web exec tsc --noEmit"
+    },
+    "devDependencies": {
+        "turbo": "^2.8.10"
+    }
+}
