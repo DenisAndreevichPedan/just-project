@@ -1,0 +1,10 @@
+{
+    "name": "@repo/ui",
+    "private": true,
+    "scripts": {
+      "build": "echo ui build",
+      "test": "vitest run --passWithNoTests",
+      "typecheck": "echo shared typecheck",
+      "lint": "echo shared lint"
+    }
+  }

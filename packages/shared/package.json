@@ -1,0 +1,10 @@
+{
+    "name": "@repo/shared",
+    "private": true,
+    "scripts": {
+      "build": "echo shared build",
+      "test": "vitest run --passWithNoTests",
+      "typecheck": "echo shared typecheck",
+      "lint": "echo shared lint"
+    }
+  }
