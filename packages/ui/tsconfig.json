@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "allowJs": true,
+      "target": "ES2017",
+      "lib": ["dom", "dom.iterable", "esnext"],
+      "module": "esnext",
+      "moduleResolution": "bundler",
+      "jsx": "react-jsx",
+      "strict": true,
+      "skipLibCheck": true,
+      "noEmit": true,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "paths": {
+        "@ui": ["./src/index.ts"]
+      }
+    },
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.jsx"]
+  }

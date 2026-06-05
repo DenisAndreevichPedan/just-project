@@ -1,16 +1,22 @@
 'use client'
-import {useState, useEffect} from 'react'
+import {useState, useEffect} from "react";
 import { Notification } from "@ui";
 
+type CreateTicketFormProps = {
+    formIsOpen: boolean
+    submitFunction: any
+    ticketId?: string | null
+}
 
-
-export function CreateTicketForm ({submitFunction, formIsOpen}) {
+export function CreateTicketForm ({ submitFunction, formIsOpen, ticketId = null }: CreateTicketFormProps) {
 
     const [values, setValues] = useState({title: '', description: '', status: '', priority: ''}) 
     const [showNotification, setShowNotification] = useState(false)
 
-    const changeHadler = (id) => (e) => {
-        setValues((prevState) => ({...prevState, [id]: e.target.value}))
+    const isUpdateMode = ticketId !== null
+
+    const changeHadler = (id: any) => (e: any) => {
+        setValues((prevState: any) => ({...prevState, [id]: e.target.value}))
     }
 
     const isValid = Object.values(values).every(value => 
@@ -25,9 +31,15 @@ export function CreateTicketForm ({submitFunction, formIsOpen}) {
     
 return formIsOpen ? (
     <form
-     onSubmit={(e) => {
+     onSubmit={(e: any) => {
         e.preventDefault()
-        isValid ? submitFunction(values) : setShowNotification(true)
+
+        if (isValid) {
+            submitFunction({ ...values, id: isUpdateMode ? ticketId : crypto.randomUUID()}, ticketId)
+            return
+        }
+ 
+        setShowNotification(true)
     }}
     >
         <div 

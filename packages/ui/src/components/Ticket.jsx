@@ -1,9 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import {Notification} from '@ui'
+import {Notification, StatusBadge} from '@ui'
 
-export function Ticket ({title, description, status, priority, setShowNotification}) {
+export function Ticket ({id, title, description, status, priority, setShowNotification}) {
     
     const router = useRouter()
 
@@ -17,20 +17,18 @@ export function Ticket ({title, description, status, priority, setShowNotificati
         }
 
         const params = new URLSearchParams({
-            title,
-            description,
-            status,
-            priority
+            id
         })
 
         router.push(`/ticket-details?${params.toString()}`)
     }
 
     return (
-        <div onClick={clickHandler} style={{paddingBottom: "8px", cursor: "pointer"}}>
-            <div>
+        <div onClick={clickHandler} style={{paddingBottom: "8px", cursor: "pointer", display: "flex"}}>
+            <div style={{marginRight: "5px"}}>
                 - {title}
             </div>
+            <StatusBadge status={status}/>
         </div>
     )
 }
