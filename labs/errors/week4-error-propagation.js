@@ -94,10 +94,10 @@ const delay = 150;
 // console.log("========== Case 1: sync try/catch ==========");
 // case1();
 
-setTimeout(() => {
-  console.log("\n========== Case 2: throw in Promise executor ==========");
-  case2();
-}, delay * 1);
+// setTimeout(() => {
+//   console.log("\n========== Case 2: throw in Promise executor ==========");
+//   case2();
+// }, delay * 1);
 
 // setTimeout(() => {
 //   console.log("\n========== Case 3: async without await ==========");
@@ -114,10 +114,10 @@ setTimeout(() => {
 //   case5();
 // }, delay * 4);
 
-// setTimeout(() => {
-//   console.log("\n========== Case 6: setTimeout + outer try/catch ==========");
-//   case6();
-// }, delay * 5);
+setTimeout(() => {
+  console.log("\n========== Case 6: setTimeout + outer try/catch ==========");
+  case6();
+}, delay * 5);
 
 // setTimeout(() => {
 //   console.log("\n========== Done ==========");
