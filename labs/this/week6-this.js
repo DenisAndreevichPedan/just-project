@@ -6,8 +6,8 @@
 // Перед запуском:
 // 1. Для каждого case выпиши прогноз вывода.
 // 2. Запусти файл.
-// 3. Сравни прогноз с фактом.
-// 4. Выполни задачи task1–task3 внизу (раскомментируй вызовы после решения).
+// 3. Сравни прогноз с фактом (таблица в README.md).
+// 4. Реши task1–task3 и проверь вывод runTasks().
 
 "use strict";
 
@@ -99,20 +99,20 @@ function case5_bind() {
 }
 
 // ─────────────────────────────────────────────
-// Tasks — реши сам, затем раскомментируй вызовы внизу файла
+// Tasks
 // ─────────────────────────────────────────────
 
 // Task 1: верни функцию, которая при вызове печатает title тикета с префиксом объекта.
 // Используй bind (не стрелку как метод объекта).
 function task1_createBoundPrinter(ticketService) {
-  // TODO: return bound function
-  throw new Error("task1: implement createBoundPrinter");
+  return ticketService.print.bind(ticketService);
 }
 
 // Task 2: оберни метод так, чтобы setTimeout не терял this (wrapper, не bind).
 function task2_wrapForTimeout(ticketService) {
-  // TODO: return function () { ... } that calls ticketService.print correctly
-  throw new Error("task2: implement wrapForTimeout");
+  return function (title) {
+    ticketService.print(title);
+  };
 }
 
 // Task 3: в объекте counter исправь increment — должен увеличивать count при obj.increment().
@@ -120,7 +120,7 @@ function task2_wrapForTimeout(ticketService) {
 function task3_fixCounter() {
   const counter = {
     count: 0,
-    increment: () => {
+    increment() {
       this.count += 1;
     },
     getValue() {
@@ -128,7 +128,6 @@ function task3_fixCounter() {
     },
   };
 
-  // TODO: fix increment (method or bind), keep getValue as method
   return counter;
 }
 
@@ -167,8 +166,7 @@ case4_arrowVsRegular();
 console.log("\n========== Case 5: bind ==========");
 case5_bind();
 
-// После решения task1–task3:
-// console.log("\n========== Tasks ==========");
-// runTasks();
+console.log("\n========== Tasks ==========");
+runTasks();
 
-console.log("\n========== Done (cases only; uncomment runTasks when ready) ==========");
+console.log("\n========== Done ==========");

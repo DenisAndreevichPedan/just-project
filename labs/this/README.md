@@ -16,7 +16,7 @@ node labs/this/week6-this.js
 ```
 
 4. Сравни прогноз с фактом; заполни таблицу наблюдений (ниже).
-5. Реши **task1–task3** в том же файле, раскомментируй `runTasks()` и проверь вывод.
+5. Реши **task1–task3** в том же файле и проверь вывод `runTasks()`.
 6. Пройди **мини-собеседование с AI** (раздел ниже) — без готовых ответов от модели до твоей попытки.
 
 ---
@@ -35,11 +35,25 @@ node labs/this/week6-this.js
 
 | # | Кейс | Мой прогноз | Факт | Совпало? |
 |---|------|-------------|------|----------|
-| 1 | обычная функция + `call` | | | |
-| 2 | метод объекта | | | |
-| 3 | потеря `this` | | | |
-| 4 | стрелка vs `function` | | | |
-| 5 | `bind` | | | |
+| 1 | обычная функция + `call` | `[1] direct call this === undefined` → `[1] via call this === { name: 'forced-context' }` | то же | ✅ |
+| 2 | метод объекта | `[2] Ticket: Broken login` | то же | ✅ |
+| 3 | потеря `this` | `[3] (lost this) Detached call` → `[3] (lost this) setTimeout without bind` | то же (строка из `setTimeout` — после sync-кода) | ✅ |
+| 4 | стрелка vs `function` | `[4] arrow sees label: retry-queue` → `[4] regular sees label: undefined` | то же | ✅ |
+| 5 | `bind` | `[5] Ticket: Bound call` → `[5] Ticket: setTimeout with bind` | то же (строка из `setTimeout` — после sync-кода) | ✅ |
+
+---
+
+## Выводы по кейсам
+
+**Case 1** — у обычной функции `this` задаётся в момент вызова. Голый вызов `showThis()` в strict mode → `undefined`. `showThis.call(obj, …)` явно подставляет `this`.
+
+**Case 2** — при `ticketService.print(…)` слева от скобок объект, поэтому `this` = `ticketService`. Метод видит `this.prefix` и `this.formatTitle`.
+
+**Case 3** — `const detached = ticketService.print` отвязывает метод от объекта. Вызов `detached(…)` и передача `ticketService.print` в `setTimeout` — голые вызовы, `this` теряется. Третий аргумент `setTimeout` — это аргумент для callback, не для таймера.
+
+**Case 4** — стрелка внутри `schedule()` берёт лексический `this` метода (`timer`). Вложенная `function` при `regularLog()` вызывается без объекта слева → `this === undefined`.
+
+**Case 5** — `bind(ticketService)` создаёт функцию с навсегда привязанным `this`. Работает и при прямом вызове, и в `setTimeout`.
 
 ---
 
@@ -50,24 +64,22 @@ node labs/this/week6-this.js
 | 1 | `this` в обычной функции | `case1_regularFunction` |
 | 2 | `this` в методе объекта | `case2_objectMethod` |
 | 3 | потеря `this` | `case3_lostThis` |
-| 4 | Стрелочная функция (лексический `this`) | `case4_arrowVsRegular` |
+| 4 | стрелочная функция (лексический `this`) | `case4_arrowVsRegular` |
 | 5 | `bind` | `case5_bind` |
 
-> В кейсе 3 для отвязанного вызова увидишь `(lost this)` вместо префикса; таймер сработает **после** синхронного кода — смотри порядок строк `[3]` в консоли.
+> В кейсах 3 и 5 строки из `setTimeout` появятся **после** синхронного `Done` — таймер асинхронный.
 
 ---
 
-## 3 задачи по `this` (обязательно)
+## 3 задачи по `this`
 
-Реализуй в `week6-this.js`:
+| # | Задача | Приём | Ожидаемый вывод |
+|---|--------|-------|-----------------|
+| **task1** | `task1_createBoundPrinter` | `bind` | `Task: task1 ok` |
+| **task2** | `task2_wrapForTimeout` | wrapper (без `bind`) | `Task: task2 ok` |
+| **task3** | `task3_fixCounter` | обычный метод вместо стрелки | `[task3] count = 2` |
 
-| # | Задача | Что проверяем |
-|---|--------|----------------|
-| **task1** | `task1_createBoundPrinter` | исправление через `bind` |
-| **task2** | `task2_wrapForTimeout` | исправление через wrapper (без `bind`) |
-| **task3** | `task3_fixCounter` | почему стрелка как метод ломает `this` |
-
-**Ожидаемый вывод после `runTasks()`:**
+**Фактический вывод `runTasks()`:**
 
 ```text
 Task: task1 ok
@@ -75,11 +87,22 @@ Task: task2 ok
 [task3] count = 2
 ```
 
-Подсказки без полного решения:
+### Решения (для сверки)
 
-- **task1:** `return ticketService.print.bind(ticketService)` или bind с фиксированным первым аргументом.
-- **task2:** `return function () { ticketService.print(...arguments); }` или явная передача title.
-- **task3:** замени `increment: () =>` на `increment() { this.count += 1; }`.
+```js
+// task1
+return ticketService.print.bind(ticketService);
+
+// task2
+return function (title) {
+  ticketService.print(title);
+};
+
+// task3
+increment() {
+  this.count += 1;
+}
+```
 
 ---
 
@@ -110,22 +133,22 @@ Task: task2 ok
 
 ---
 
-## Самопроверка (ответь письменно)
+## Самопроверка (ответы)
 
-1. Кто задаёт `this` у **обычной** функции в момент вызова?
-2. Назови два способа **не потерять** `this` при передаче метода в колбэк.
-3. Почему стрелка внутри `schedule()` в кейсе 4 видит `label`, а вложенная `function` — нет?
-4. Можно ли починить потерю `this` только стрелкой на верхнем уровне модуля? Почему да/нет?
-5. Где в проекте тикетов (React) `this` почти не нужен, а где похожая проблема — «устаревший контекст» в колбэках?
+1. **Кто задаёт `this` у обычной функции** — способ вызова: объект слева от точки, `call`/`apply`, или голый вызов (в strict mode → `undefined`).
+2. **Два способа не потерять `this` в колбэке** — `bind` и wrapper (вызов через объект в замыкании: `ticketService.print(title)`).
+3. **Почему стрелка в кейсе 4 видит `label`** — она создана внутри `schedule()`, где `this` = `timer`; стрелка подхватывает этот лексический `this`. Обычная `function` при `regularLog()` получает свой `this` от вызова — а вызов голый.
+4. **Можно ли починить потерю `this` стрелкой на верхнем уровне модуля** — нет для метода объекта: `increment: () =>` не привязывает `this` к объекту, родительский `this` там не counter.
+5. **В React** — в функциональных компонентах `this` почти не нужен (`useState` вместо `this.state`). Похожая проблема — stale closure в колбэках и эффектах без актуальных зависимостей.
 
 ---
 
 ## Критерии готовности
 
-- [ ] Запускал `week6-this.js` и сверял 5 кейсов с прогнозом.
-- [ ] Можешь объяснить, **почему у стрелки нет своего `this`** (лексическая привязка).
-- [ ] Можешь исправить потерю `this` через **`bind` или wrapper** (task1 + task2).
-- [ ] Решены **минимум 3 задачи** по `this` (task1–task3 в скрипте).
+- [x] Запускал `week6-this.js` и сверял 5 кейсов с прогнозом.
+- [x] Можешь объяснить, **почему у стрелки нет своего `this`** (лексическая привязка).
+- [x] Можешь исправить потерю `this` через **`bind` или wrapper** (task1 + task2).
+- [x] Решены **task1–task3** в скрипте.
 - [ ] Прошёл мини-собеседование с AI по правилам выше.
 
 ---
@@ -135,5 +158,3 @@ Task: task2 ok
 ```bash
 node labs/this/week6-this.js
 ```
-
-После задач — раскомментируй в файле блок `runTasks()` и запусти снова.
